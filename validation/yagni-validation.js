@@ -51,22 +51,24 @@ function validateYAGNI(filePath) {
   const lines = content.split('\n');
   
   Object.entries(YAGNI_ANTI_PATTERNS).forEach(([category, config]) => {
-    config.patterns.forEach(pattern => {
-      const matches = content.match(pattern);
-      if (matches) {
-        matches.forEach((match, index) => {
-          const lineIndex = content.substring(0, content.indexOf(match)).split('\n').length;
-          issues.push({
-            file: filePath,
-            line: lineIndex,
-            category,
-            severity: config.severity,
-            description: config.description,
-            match: match.substring(0, 60)
+    if (Array.isArray(config.patterns)) {
+      config.patterns.forEach(pattern => {
+        const matches = content.match(pattern);
+        if (matches) {
+          matches.forEach((match, index) => {
+            const lineIndex = content.substring(0, content.indexOf(match)).split('\n').length;
+            issues.push({
+              file: filePath,
+              line: lineIndex,
+              category,
+              severity: config.severity,
+              description: config.description,
+              match: match.substring(0, 60)
+            });
           });
-        });
-      }
-    });
+        }
+      });
+    }
   });
   
   // Check file size (YAGNI: files should be focused)
